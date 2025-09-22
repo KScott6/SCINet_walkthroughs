@@ -332,10 +332,52 @@ I created an automated genome annotation pipeline manager script, available on S
 
 This pipeline manager keeps track of all genomes in the pipeline, and works well to generate the annotations necessary for the genome assembly/annotation manager software [MycoTools](https://github.com/xonq/mycotools).
 
+---
 
+## Citations and versions for software/databases used
 
+Funannotate is a wrapper software (incorporates many other software), so you need to cite funannotate itself as well as all the software dependencies. 
 
+ - `Funannotate v1.8.17`
+	Palmer, J.M. and Stajich, J., 2020. Funannotate v1. 8.1: Eukaryotic genome annotation. Zenodo, 2020(4054262). https://doi.org/10.5281/zenodo.1134477
 
+- `Augustus v3.5.0`
+	Stanke, M., Schöffmann, O., Morgenstern, B. and Waack, S., 2006. Gene prediction in eukaryotes with a generalized hidden Markov model that uses hints from external sources. BMC bioinformatics, 7(1), p.62.
+
+- `BUSCO v2`
+	Seppey, M., Manni, M. and Zdobnov, E.M., 2019. BUSCO: assessing genome assembly and annotation completeness. In Gene prediction: methods and protocols (pp. 227-245). New York, NY: Springer New York.
+
+Note: Funannotate uses a "modified BUSCO2 script to identify conserved orthologs" (funannotate manual). You have access to BUSCO5 in the funannotate_environment and this is the version that automatically runs when you call "busco", but BUSCO2 is the version used by funannotate.
+
+- `EVidence Modeler`
+	Haas, B.J., Salzberg, S.L., Zhu, W., Pertea, M., Allen, J.E., Orvis, J., White, O., Buell, C.R. and Wortman, J.R., 2008. Automated eukaryotic gene structure annotation using EVidenceModeler and the Program to Assemble Spliced Alignments. Genome biology, 9(1), p.R7.
+	
+- `Exonerate v2.4.0`
+	Slater, G.S.C. and Birney, E., 2005. Automated generation of heuristics for biological sequence comparison. BMC bioinformatics, 6(1), p.31.
+		
+- `GeneMark-ES Suite v4.71_lic`
+	Lomsadze, A., Ter-Hovhannisyan, V., Chernoff, Y.O. and Borodovsky, M., 2005. Gene identification in novel eukaryotic genomes by self-training algorithm. Nucleic acids research, 33(20), pp.6494-6506.
+
+- `GlimmerHMM v3.0.4`
+	Majoros, W.H., Pertea, M. and Salzberg, S.L., 2004. TigrScan and GlimmerHMM: two open source ab initio eukaryotic gene-finders. Bioinformatics, 20(16), pp.2878-2879.
+
+- `minimap2 v2.28-r1209`
+	Li, H., 2018. Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics, 34(18), pp.3094-3100.
+	
+- `Snap v2006-07-28`
+	Korf, I., 2004. Gene finding in novel genomes. BMC bioinformatics, 5(1), p.59.
+
+- `tbl2asn v25.8`
+	(https://www.ncbi.nlm.nih.gov/genbank/table2asn/)
+	
+- `tRNAScan-SE v2.0.12`
+	Chan, P.P., Lin, B.Y., Mak, A.J. and Lowe, T.M. (2021) "tRNAscan-SE 2.0: 
+improved detection and functional classification of transfer RNA genes",
+Nucleic Acids Res. 49:9077–9096.
+https://doi.org/10.1093/nar/gkab688
+
+- `RepeatModeler v2.0.6`
+	Flynn, J.M., Hubley, R., Goubert, C., Rosen, J., Clark, A.G., Feschotte, C. and Smit, A.F., 2020. RepeatModeler2 for automated genomic discovery of transposable element families. Proceedings of the National Academy of Sciences, 117(17), pp.9451-9457.
 
 
 
