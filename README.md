@@ -16,7 +16,7 @@
 
 <br>
 
-`Genome assembly` Creation of genome assemblies from different sequecning technologies. 
+`Genome assembly` Creation of genome assemblies from different sequencing technologies. 
 
 - Illumina (short-read) (will upload soon)
 - Nanopore aka ONT/MinION (long-read) (will upload soon)
