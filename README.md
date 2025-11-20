@@ -12,7 +12,7 @@
 
 `Cano.py` Automated creation of phylogenomic trees from BUSCO results.
 
-- [cano.py script and walkthrough](cano.py/)
+- [cano.py script and walkthrough](../cano.py/)
 
 <br>
 
