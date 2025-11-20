@@ -2,7 +2,7 @@
 
 <br>
 
-`Funannotate walkthroughs` Genome structural annotation.
+`Funannotate walkthroughs` Fungal genome annotation (structural and functional).
 
 - Automated annotation pipeline and genome manager (will upload soon)
 - [Basic pipeline (Introduction to Funannotate)](funannotate_pipeline/basic_pipeline)
@@ -12,7 +12,7 @@
 
 `Cano.py` Automated creation of phylogenomic trees from BUSCO results.
 
-- cano.py (will upload soon)
+- [cano.py script and walkthrough](cano.py/)
 
 <br>
 
