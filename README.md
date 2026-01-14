@@ -2,7 +2,7 @@
 
 <br>
 
-`Genome acquisition` How to get new genome assemblies, annotations, and metadata from NCBI. 
+`NCBI genome acquisition` How to get new genome assemblies, annotations, and metadata from NCBI. 
 
 - [genome acquisition scripts and walkthrough](https://github.com/KScott6/SCINet_walkthroughs/tree/main/ncbi_genome_aquisition)
 
