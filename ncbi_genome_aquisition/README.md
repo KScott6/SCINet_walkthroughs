@@ -100,18 +100,7 @@ python /project/arsef/scripts/download_ncbi_batches.py \
   --api_key "" # include your API key
 ```
 
-Congrats! This should result in your genomes and annotations being downloaded in one place. Here is what the output folder should look like:
-
-ncbi_downloads/
-├── fna/        # genome assemblies
-├── gff/        # annotations (if available)
-├── gtf/
-├── faa/
-├── cds/
-├── rna/
-├── logs/
-├── accession_chunks/
-└── download_dump_site/
+Congrats! This should result in your genomes and annotations being downloaded in one place. The genome assemblies will be in the "fna" folder and if there were any annotations, they will be in "gff". 
 
 You probably want to annotate your assemblies now - check out the [SCINet Funannotate walkthrough](https://github.com/KScott6/SCINet_walkthroughs/tree/main/funannotate_pipeline/basic_pipeline) to get one step closer to incorporating these genomes into the lab MycoTools database. 
 
