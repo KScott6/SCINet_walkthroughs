@@ -2,23 +2,30 @@
 
 <br>
 
-`NCBI genome acquisition` How to get new genome assemblies, annotations, and metadata from NCBI. 
+---
 
-- [genome acquisition scripts and walkthrough](https://github.com/KScott6/SCINet_walkthroughs/tree/main/ncbi_genome_aquisition)
+GRAIN (Genome Retrieval, Annotation & INtegration) Pipeline scripts and walkthroughs
 
-`Funannotate walkthroughs` Fungal genome annotation (structural and functional).
+[Genome acquisition scripts and walkthrough](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_acquisition/README.md) : How to bulk download new genome assemblies, annotations, and metadata from NCBI. 
 
-- Automated annotation pipeline and genome manager (will upload soon)
-- [Basic pipeline (Introduction to Funannotate)](funannotate_pipeline/basic_pipeline)
-- [Install and maintenance documentation](/funannotate_pipeline/install_documentation)
+[Genome annotation scripts and walkthrough](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_annotation/README.md) : How to bulk annotate new genomes assemblies with Funannotate.
 
-<br>
+Genome integration into MycoTools : (will upload soon)
+
+---
 
 `Cano.py` Automated creation of phylogenomic trees from BUSCO results.
 
 - [cano.py script and walkthrough](https://github.com/KScott6/cano.py)
+ 
+---
 
-<br>
+`Other Funannotate walkthroughs` Fungal genome annotation (structural and functional).
+
+- [Basic pipeline (Introduction to Funannotate)](funannotate/basic_pipeline)
+- [Install and maintenance documentation](/funannotate/install_documentation)
+
+---
 
 `Genome assembly` Creation of genome assemblies from different sequencing technologies. 
 
