@@ -4,7 +4,7 @@
 
 ---
 
-GRAIN (Genome Retrieval, Annotation & INtegration) Pipeline scripts and walkthroughs
+`GRAIN Pipeline` Automated Genome Retrieval, Annotation & INtegration
 
 [Genome acquisition scripts and walkthrough](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_acquisition/README.md) : How to bulk download new genome assemblies, annotations, and metadata from NCBI. 
 
