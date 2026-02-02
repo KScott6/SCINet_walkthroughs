@@ -4,6 +4,8 @@ Funannotate is a collection of software used to structurally and functionally an
 
 This page contains the documentation of how I set everything up- software dependencies, etc. I set up a shared conda environment for funannotate; packages and dependencies are saved to the `/project/arsef` folder rather than my home folder.
 
+If you are going to mess with the SCINet Funannotate install or try to install your own copy, make sure to read carefully! There are a lot of small details that are very important for this software to actually work. 
+
 ---
 
 ## Creating shared conda environment
@@ -47,7 +49,7 @@ echo "export FUNANNOTATE_DB=/project/arsef/databases/funannotate_databases/" > /
 
 echo "unset FUNANNOTATE_DB" > /project/arsef/environments/funannotate_working/etc/conda/deactivate.d/funannotate.sh 
 
-pip install distro
+#pip install distro # manual install no longer required in funannotate=1.8.17 I believe
 
 funannotate setup -i all -d /project/arsef/databases/funannotate_databases/
 
@@ -66,7 +68,11 @@ I have most fungal and insect/arthropod BUSCO odb10 datasets stored in /project/
 
 1) Check the separate BUSCO dataset folder (/project/arsef/databases/busco_datasets/lineages/)
 
-I downloaded all obd_10 eukaryora BUSCO datasets 1/30/25, as time goes on I'll probably add more datasets. If your desired dataset is stored in the busco_datasets/lineage/ folder, just copy the folder into the funannotate database folder **and change permissions on that folder**. Like so:
+I downloaded all obd_10 eukaryora BUSCO datasets 1/30/25, as time goes on I'll probably add more datasets. 
+
+**(!)** If your desired dataset is stored in the busco_datasets/lineage/ folder, just copy the folder into the funannotate database folder **and change permissions on that folder**. You need to do this **every time you add to this folder.** 
+
+You can change permissions like so:
 
 ```bash
 cp -R /project/arsef/databases/busco_datasets/lineages/aves_odb10 /project/arsef/databases/funannotate_databases/
@@ -74,7 +80,9 @@ cp -R /project/arsef/databases/busco_datasets/lineages/aves_odb10 /project/arsef
 chmod -R 770 /project/arsef/databases/funannotate_databases/aves_odb10
 ```
 
-Or you can download a new dataset via BUSCO. It's just one extra step. However, it is **still important to change permissions** once you have downloaded the file. 
+Or you can download a new dataset via BUSCO. It's just one extra step. 
+
+**(!)** However, it is **still important to change permissions** once you have downloaded the file. 
 
 ```bash
 # downloading aves_odb10
@@ -83,6 +91,22 @@ busco --download_path /project/arsef/databases/busco_datasets/ --download aves_o
 cp -R /project/arsef/databases/busco_datasets/lineages/aves_odb10 /project/arsef/databases/funannotate_databases/
 
 chmod -R 770 /project/arsef/databases/funannotate_databases/aves_odb10
+```
+
+---
+
+
+## Putting software in PATH
+
+```bash
+echo 'export PATH=/project/arsef/environments/funannotate/__external_software/:$PATH' >>~/.bash_profile
+echo 'export PATH=/project/arsef/environments/funannotate/__external_software/eggnog-mapper/:$PATH' >>~/.bash_profile
+echo 'export PATH=/project/arsef/environments/funannotate/__external_software/signalp-5.0b/bin/:$PATH' >>~/.bash_profile
+echo 'export PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/:$PATH' >>~/.bash_profile
+echo 'export PATH=/project/arsef/environments/funannotate/__external_software/interproscan-5.73-104.0/:$PATH' >>~/.bash_profile
+echo 'export FUNANNOTATE_DB=/project/arsef/databases/funannotate_databases/' >>~/.bash_profile
+echo 'export GENEMARK_PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/' >>~/.bash_profile
+source ~/.bash_profile
 ```
 
 ---
@@ -117,6 +141,7 @@ which perl # make note of path
 perl ./change_path_in_perl_scripts.pl /project/arsef/environments/funannotate/bin/perl
 ```
 
+
 ### eggnog-mapper (emapper.py)
 
 ```bash
@@ -140,7 +165,7 @@ cd /project/arsef/environments/funannotate/__external_software/
 tar xvzf /project/arsef/environments/funannotate/__external_software/signalp-5.0b.Linux.tar.gz
 ```
 
-## EvidenceModeler
+### EvidenceModeler
 
 Hopefully this fixes the EvidenceModeler error that pops up about 1.5hr into a funannotate predict run
 
@@ -151,7 +176,7 @@ chmod +x ./EvmUtils/evidence_modeler.pl
 ln -s ./EvmUtils/evidence_modeler.pl ./evidence_modeler.pl
 ```
 
-## InterProScan
+### InterProScan
 
 ```bash
 cd /project/arsef/environments/funannotate/__external_software/
@@ -161,7 +186,7 @@ cd /project/arsef/environments/funannotate/__external_software/interproscan-5.73
 python3 setup.py -f interproscan.properties
 ```
 
-## Assorted software via conda
+### Assorted software via conda
 
 ```bash
 # for repeatmasker/repeatmodeler 
@@ -175,18 +200,7 @@ pip install --upgrade h5py
 
 ```
 
-## Putting software in PATH
-
-```bash
-echo 'export PATH=/project/arsef/environments/funannotate/__external_software/:$PATH' >>~/.bash_profile
-echo 'export PATH=/project/arsef/environments/funannotate/__external_software/eggnog-mapper/:$PATH' >>~/.bash_profile
-echo 'export PATH=/project/arsef/environments/funannotate/__external_software/signalp-5.0b/bin/:$PATH' >>~/.bash_profile
-echo 'export PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/:$PATH' >>~/.bash_profile
-echo 'export PATH=/project/arsef/environments/funannotate/__external_software/interproscan-5.73-104.0/:$PATH' >>~/.bash_profile
-echo 'export FUNANNOTATE_DB=/project/arsef/databases/funannotate_databases/' >>~/.bash_profile
-echo 'export GENEMARK_PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/' >>~/.bash_profile
-source ~/.bash_profile
-```
+---
 
 ## antiSMASH environment
 
