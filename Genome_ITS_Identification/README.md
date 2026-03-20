@@ -8,16 +8,16 @@ The first script will create individual job scripts to BLAST a reference ITS seq
 
 ```bash
 python /project/arsef/scripts/genome_scripts/make_its_jobs.py \
-  --ome-list /project/arsef/projects/collab/costa_rica/CR_ome_list.txt \
-  --asm-root /project/arsef/projects/collab/costa_rica/final_ncbi_assemblies \
-  --asm-pattern "{ome}.fna" \
-  --its-out-root /project/arsef/projects/collab/costa_rica/its_id/its_extraction \
-  --cmd-root /project/arsef/projects/collab/costa_rica/its_id/scripts \
-  --log-root /project/arsef/projects/collab/costa_rica/its_id/logs \
-  --results-root /project/arsef/projects/collab/costa_rica/its_id/final_blast_results \
-  --its-ref /project/arsef/projects/collab/costa_rica/its_id/Fv_ref_seq.fasta \
+  --ome-list /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/ome_list.txt \
+  --asm-root /project/arsef/projects/ambrosiella/final_versions_ncbi/ncbi_assemblies \
+  --asm-pattern "{ome}.fasta" \
+  --its-out-root /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/its_extraction \
+  --cmd-root /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/scripts \
+  --log-root /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/logs \
+  --results-root /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/final_results \
+  --its-ref /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/Ambrosiella_ITS_ref.fasta \
   --nt-db /project/arsef/databases/nt/nt \
-  --genome-hit-count all
+  --genome-hit-count all --submit
 ```
 
 `--ome-list` single-column list of all your ome codes.

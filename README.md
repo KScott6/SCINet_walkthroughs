@@ -27,6 +27,12 @@ Genome integration into MycoTools : (will upload soon)
 
 ---
 
+`Automated ITS Identification` Automatically extracts ITS sequence (or any other region) from genome(s) and BLASTs them against the NCBI nr database. 
+
+- [Genome_ITS_Identification](/Genome_ITS_Identification/README.md)
+
+---
+
 `Genome assembly` Creation of genome assemblies from different sequencing technologies. 
 
 - Illumina (short-read) (will upload soon)
