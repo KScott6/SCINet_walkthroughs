@@ -10,7 +10,7 @@
 
 [Genome annotation scripts and walkthrough](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_annotation/README.md) : How to bulk annotate new genomes assemblies with Funannotate.
 
-[Genome integration into MycoTools](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_integration/README.md) : How to input your genome assemblies and annotations into the MycoTools database. 
+[Genome integration into MycoTools](https://github.com/KScott6/GRAIN_Pipeline/blob/main/genome_integration/README_user.md) : How to input your genome assemblies and annotations into the MycoTools database. 
 
 [Extra analyses using MycoTools genomic data](https://github.com/KScott6/GRAIN_Pipeline/blob/main/extra_analyses/README.md) : Automatically run software such as QUAST, BUSCO, and annotationStats to get basic information on your genomes stored in the MycoTools database. 
 
