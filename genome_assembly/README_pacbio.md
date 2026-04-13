@@ -12,13 +12,17 @@ This pipeline takes raw HiFi reads from one or more samples and performs:
 
 All steps are driven by a single metadata file (TSV/CSV). 
 
-**Required columns**
+<br>
+
+**Required columns in the metadata file**
 
 sample_name
    * Used for all output naming
    * Must not contain spaces or special characters (use _ or - only)
+
 barcode 
    * Used to locate BAM files in bam2fastq step
+
 genome_size_Mbp
    * Used in assembly step
 
@@ -70,10 +74,15 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_bam2fastq.py \
 Explanation of key options:
 
 `--metadata`	Input metadata table with sample names and barcodes
+
 `--bam_dir`	Location of input BAM files (requires all .bam and .bam.pbi files to be in the same folder)
+
 `--fastq_dir`	Desired output parent FASTQ directory
+
 `--threads`	Threads for bam2fastq
+
 `--submit`	Submit jobs immediately
+
 `--overwrite`	Re-run even if output exists
 
 
@@ -91,6 +100,8 @@ Notes:
 ---
 
 ## Step 2 : Read QC and filtering (fastplong v0.4.1)
+
+PacBio data is usually great quality, but it's still worth running it through fastplong to filter out any missed adapter sequences. Also creates a nice report of your read data.
 
 Script : make_fastplong_jobs.py
 
@@ -133,11 +144,17 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_fastplong.py \
 Explanation of key options:
 
 `--metadata`	Metadata file
+
 `--sample_column`	Column names containing sample naming info (default: sample_name)
+
 `--input_dir`	FASTQ input location
+
 `--output_dir`	QC output location
+
 `--report_suffix`	Suffix for HTML/JSON reports; prefix will be sample_name
+
 `--threads`	Threads (max 16; fastplong will not use more than this)
+
 `--overwrite`	Force re-run
 
 <br>
@@ -170,16 +187,27 @@ If you followed this pipeline exactly, you want to specify "--input_suffix .filt
 Explanation of key options:
 
 `--metadata`	Metadata table (required)
+
 `--assembly_software`	flye or hifiasm
+
 `--input_dir`	Location of FASTQ reads
+
 `--input_suffix`	Recommended: .filt.fastq.gz (default highest priority)
+
 `--script_dir`	Output location for job scripts
+
 `--log_dir`	SLURM logs (auto-created)
+
 `--assembly_dir`	Per-sample working directories
+
 `--final_assembly_dir`	Centralized final FASTA output
+
 `--threads`	CPU threads
+
 `--mem_per_cpu`	Memory per CPU
+
 `--submit`	Submit jobs immediately
+
 `--overwrite	`Re-run even if output exists
 
 <br>
@@ -307,13 +335,21 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_quast_job.py \
 Explanation of key options:
 
 `--assembly_parent_dir`	Folder containing final assemblies
+
 `--script_dir`	Output location for QUAST job script
+
 `--log_dir`	SLURM log directory
+
 `--quast_base_dir`	Base directory for QUAST output folders
+
 `--run_name`	Optional custom name for this QUAST run (if no name provided, will be labeled with a timestamp)
+
 `--threads`	Number of CPU threads
+
 `--metadata` If provided, the script will only include the genomes with sample names present in the metadata sheet.
+
 `--submit`	Submit job immediately
+
 `--overwrite`	Allow reuse of an existing output folder
 
 <br>
@@ -372,12 +408,21 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_busco_jobs.py 
 Explanation of key options:
 
 `--assembly_parent_dir`	Folder containing final assemblies
+
 `--busco_lineage`	BUSCO lineage/database path
+
 `--script_dir`	Output location for BUSCO job scripts
+
 `--log_dir`	SLURM log directory
+
 `--busco_out_dir`	Parent BUSCO output directory
+
 `--short_summary_dir`	Folder for copied/renamed BUSCO summary files
+
 `--threads`	CPU threads
+
 `--submit`	Submit jobs immediately
+
 `--overwrite`	Re-create script for sample, even if BUSCO summary already exists
+
 `--force_busco`	Add -f (force overwrite) to BUSCO command
