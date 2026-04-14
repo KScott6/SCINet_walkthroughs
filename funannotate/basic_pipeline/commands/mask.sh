@@ -10,9 +10,13 @@
 
 ### CHANGE OPTIONS HERE ##
 ome="fusoxy1"
+threads=12
+
+
+
 fun_dir="/project/arsef/projects/funannotate_test"
 project_dir="${fun_dir}/${ome}"
-threads=12
+
 
 module load miniconda/24.7.1-2
 source activate /project/arsef/environments/funannotate

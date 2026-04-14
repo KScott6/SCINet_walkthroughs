@@ -11,6 +11,8 @@
 
 ### CHANGE OPTIONS HERE ##
 ome="fusoxy1"
+
+
 fun_dir="/project/arsef/projects/funannotate_test"
 project_dir="${fun_dir}/${ome}
 

@@ -6,7 +6,12 @@ Funannotate is a collection of software used to structurally and functionally an
 
 Please see the bottom of this walkthrough for software version information as well as citation information. 
 
+**An important note:** due to how I set up the environments, the software dependencies are stored in the folder /project/arsef/environments/funannotate/, HOWEVER, the actual shared funannotate environment is here: /project/arsef/environments/funannotate_working. For all the funannotate commands, you will use /project/arsef/environments/funannotate_working.
+
 ---
+
+<br> 
+<br> 
 
 ## First-time users
 
@@ -18,25 +23,34 @@ pkgs_dirs:
     - /project/arsef/environments/pkgs
 ```
 
-Obtain the GeneMark key. This key is only good for 400 days and will need to be replaced **February 12, 2026**.
+Obtain the GeneMark key. This key is only good for 400 days and will need to be replaced in the future. If you ever have sudden and/or unexplained GeneMark issues, check the validity of this key.
 
 ```bash
-cp /project/arsef/environments/funannotate/__external_software/gm_key.gz ~
-gunzip ~/gm_key.gz
+cp /project/arsef/environments/funannotate/__external_software/gm_key ~
 mv ~/gm_key ~/.gm_key
 ```
 
-Add the software dependencies to your PATH. 
+<br> 
+
+Run these lines one at a time to add the software dependencies to your PATH. 
 
 ```bash
 echo 'export PATH=/project/arsef/environments/funannotate/__external_software/:$PATH' >>~/.bash_profile
+
 echo 'export PATH=/project/arsef/environments/funannotate/__external_software/eggnog-mapper/:$PATH' >>~/.bash_profile
+
 echo 'export PATH=/project/arsef/environments/funannotate/__external_software/signalp-5.0b/bin/:$PATH' >>~/.bash_profile
+
 echo 'export PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/:$PATH' >>~/.bash_profile
+
 echo 'export FUNANNOTATE_DB=/project/arsef/databases/funannotate_databases/' >>~/.bash_profile
+
 echo 'export GENEMARK_PATH=/project/arsef/environments/funannotate/__external_software/gmes_linux_64_4/' >>~/.bash_profile
+
 source ~/.bash_profile
 ```
+
+<br>
 
 Test to see if the conda environment and funannotate pipeline works:
 
@@ -54,21 +68,29 @@ funannotate check --show-versions
 
 ```
 
+<br> 
+
 If you see the funannotate help menu, it means you are able to use the funannotate pipeline. 
 
-You can try a funannotate test run with provided test data, but I've found that you will probably run into issues due to SCINet security (possible anti-scraping measures).
+You can *try* to run a funannotate test run with provided test data, but this depends on internet access and I've found that you will probably run into issues due to SCINet security (possible anti-scraping measures).
+
+<br> 
 
 ```bash
 funannotate test -t all --cpus 16
 ```
+
+<br> 
 
 Once you have everything set up, now all you have to do to access the funannotate environment on a fresh session is run:
 
 ```
 module load miniconda/24.7.1-2
 
-source activate /project/arsef/environments/funannotate
+source activate /project/arsef/environments/funannotate_working
 ```
+
+<br>
 
 You need to run "**source** activate [env]", not "conda activate [env]". See this SCINet page for more info: [Do not run conda init](https://scinet.usda.gov/guides/software/conda)
 
@@ -80,28 +102,35 @@ conda deactivate
 
 ---
 
+<br>
+<br>
+
 ## Step 0:  File acquisition and folder setup
 
-First, obtain your genome assemblies (.fa, .fasta).
+First, obtain and curate your **FINAL** genome assemblies (.fa, .fasta). If you have a new genome that you created and you want to submit this genome assembly/annotation to NCBI, you need to make sure your input genome assembly has already been cleared by NCBI. 
 
-I recommend renaming your genome assembly so that it has a short, unique, and informative name. This name will be used to refer to the assembly and all resulting output files. 
+I recommend renaming your genome assembly so that it has a **short, unique, and informative name**. Avoid using special characters besides _ or -, and never use whitespaces. This name will be used to refer to the assembly and all resulting output files. 
 
-For example, if I was annotating a *Fusarium oxysporum* genome, I would refer to it as **fusoxy1**, and the genome assembly would be **fusoxy1_genomic.fa**.
+For example, if I was annotating a *Fusarium oxysporum* genome, I could refer to it as it's isolate/strain name, or I could make something up like **fusoxy1**, and the genome assembly would be **fusoxy1_genomic.fa**.
 
-Then, you need to make a project folder for your genome annotation. For this set of examples, I assume you are working out of the "funannotate_test" directory. Make sure to change the name of "ome" to your chosen genome name.
+Then, you need to make a project folder for your genome annotation. For this set of examples, I assume you are working out of the "funannotate_test" directory. Make sure to change the name of "ome" variable to your chosen genome name.
 
-The following can be run on the login node:
+The following command is very quick, and can be run on the login node:
 
 ```bash
+# change the ome name here
 ome="fusoxy1"
+
 fun_dir="/project/arsef/projects/funannotate_test"
 project_dir=${fun_dir}/${ome}
 
 mkdir -p $project_dir
 cd $project_dir
-mkdir -p data data/evidence/protein data/evidence/EST.transcript commands logs prep repmod funannotate
+mkdir -p data commands logs prep repmod funannotate
 
 ```
+
+<br>
 
 Copy your genome into the /data folder.
 
@@ -110,6 +139,9 @@ cp fusoxy1_genomic.fasta $project_dir/data
 ```
 
 ---
+
+<br>
+<br>
 
 ## Step 0.5: Prepare genome assembly (clean); **OPTIONAL, for haploid genomes only**
 
@@ -129,13 +161,16 @@ If Step 0.5 is skipped, the input to "funannotate sort" will still be ${ome}_gen
 
 ---
 
+<br>
+<br>
+
 ## Step 1:  Prepare genome assembly (sort)
 
 This step sorts the contigs in the genome assembly by size, and renames the assembly headers.
 
 Unless you have a large (>100Mbp) genome, this step is pretty quick and can be run on the login node. 
 
-I have provided an example job script, see [sort.sh](commands/sort.sh) -- make sure to edit the ome name in the SLURM options (#SBATCH). Instead of "fusoxy1", it should be your specified ome name instead.
+I have provided an example job script, see [sort.sh](commands/sort.sh) -- make sure to edit the ome name in the SLURM options (#SBATCH), as well as the "ome" variable. Instead of "fusoxy1", it should be your specified ome name instead.
 
 This is the command you will run:
 
@@ -146,11 +181,13 @@ fun_dir="/project/arsef/projects/funannotate_test"
 project_dir="${fun_dir}/${ome}
 
 module load miniconda/24.7.1-2
-source activate /project/arsef/environments/funannotate
+source activate /project/arsef/environments/funannotate_working
 
 cd ${project_dir}
 funannotate sort -i "${project_dir}/data/${ome}_genomic.fasta" -o "${project_dir}/prep/${OMEcode}.clean.fasta" --minlen 1000
 ```
+
+<br>
 
 ### Explanation of Parameters
 
@@ -165,34 +202,38 @@ funannotate sort -i "${project_dir}/data/${ome}_genomic.fasta" -o "${project_dir
   
 ---
 
+<br>
+<br>
+
 ## Step 2 : Softmask your prepared genome
 
-Next, you need to softmask the prepared genome assembly. We will create a *de novo* repeat library and use that to softmask your genome using RepeatModeler. Since this step can be computationally demanding, you will need to submit these commands as a job. See my example job [mask.sh](commands/mask.sh) -- again, make sure to edit the ome name in the SLURM options (#SBATCH) before you run this yourself.
+Next, you need to softmask the prepared genome assembly. We will create a *de novo* repeat library and use that to softmask your genome using RepeatModeler. Since this step can be computationally demanding, you will need to submit these commands as a job. See my example job [mask.sh](commands/mask.sh) -- again, make sure to edit the ome name in the SLURM options (#SBATCH) and the job script before you submit this yourself. 
 
 Since these commands produce a lot of intermediate files, we will output them to the temporary 90daydata folder, then copy over only the most important files to the permanent folder. 
+
+This is what the body of the job script should look like:
 
 ```bash
 ### CHANGE OPTIONS HERE ##
 ome="fusoxy1"
+
+# You don't need to change these
 fun_dir="/project/arsef/projects/funannotate_test"
 project_dir="${fun_dir}/${ome}"
 threads="12"
 
 module load miniconda/24.7.1-2
-source activate /project/arsef/environments/funannotate
-
+source activate /project/arsef/environments/funannotate_working
 
 # Build database from sorted genome assembly
 mkdir "/90daydata/arsef/${ome}"
 cd "/90daydata/arsef/${ome}"
 BuildDatabase -name "${ome}" "${project_dir}/prep/${ome}.sort.fasta"
 
-
 # Create repeat library
 RepeatModeler -threads ${threads} -database "/90daydata/arsef/${ome}/${ome}" -engine ncbi
 # copy over output files
 cp "/90daydata/arsef/${ome}/${ome}-families.fa" "/90daydata/arsef/${ome}/${ome}-families.stk" "/90daydata/arsef/${ome}/${ome}-rmod.log" "${project_dir}/prep/"
-
 
 # Softmask genome assembly
 # you need to be in the same folder as your sorted assembly and repeat library in order for this all to work
@@ -202,6 +243,8 @@ funannotate mask -i "${project_dir}/prep/${ome}.sort.fasta" -m repeatmodeler -l 
 ```
 
 NOTE: if you are getting strange errors, such as "No such file or directory:  [your masked output file name]", it's probably because you need to install/upgrade the h5py module. Run "pip install h5py" and try again.
+
+<br>
 
 ### Explanation of Parameters
 
@@ -222,25 +265,38 @@ NOTE: if you are getting strange errors, such as "No such file or directory:  [y
 
 ---
 
+<br>
+<br>
+
 ## Step 3 : Funannotate structural annotation 
 
 In this step, Funannotate integrates multiple sources of evidence to predict gene models on the masked genome assembly. This step produces the primary set of gene models that will be carried forward for downstream analyses, so it is typically the most computationally intensive and time-consuming part of the pipeline. You will need to submit this as a job - see my example [predict.sh](/commands/predict.sh) -- again, make sure to edit the ome name in the SLURM options.
 
 There are three things you need to specify for each funannotate run:
 
-1. Transcript and protein evidence
+1. Transcript and protein evidence file locations **(read my notes)**
 
 2. The BUSCO linage that best fits your genome 
 
 3. A number to specify the iteration of funannotate you're running (this is in case you want to compare one funannotate run to another, for the same genome)
 
-The process combines *ab initio predictions* (e.g., from Augustus) along with *extrinsic evidence* such as transcript alignments and protein homology from files you provide. I have already made the UniProt database available for you on SCINet, and you should include this as protein evidence. I also encourage you to find other sources of transcript and protein evidence on [JGI](https://mycocosm.jgi.doe.gov/mycocosm/home). 
+<br>
 
-Try to get transcript evidence (1-5 files) from organisms from the **same genus** as your target genome. Look for JGI files labeled "refined transcripts" or "espressed sequence tags". Avoid files that say "allTranscripts".
+Evidence files:
 
-You can provide many protein evidence files, and it's less important that they come from a closely-related organism.
+The process combines *ab initio predictions* (e.g., from Augustus) along with *extrinsic evidence* such as transcript alignments and protein homology from files you provide. I have already made the UniProt database available for you on SCINet, and you should always include this as protein evidence.
 
-Store all your evidence files in the appropriate /evidence subfolder. As you can see in my example, provide the paths to each evidence file separated by a space.
+I try to include 1-5 files for both transcript and protein evidence, if avialable.
+
+I have already downloaded a wide variety of high-quality JGI protein/transcript evidence files here, separated by genus:  /project/arsef/projects/bulk_genome_annotation/evidence
+
+You should only provide transcript evidence from organisms from the **same genus** as your target genome. Protein evidence is less finicky, but I still like to stay within the same genus as my target assembly. 
+
+If you want more, you can find other sources of transcript and protein evidence on [JGI](https://mycocosm.jgi.doe.gov/mycocosm/home). Only obtain the files from the "Download" tabs under Mycocosm -> Annotation -> Filtered Models ("best") -> Proteins or Transcripts -> [files that are labeled ..._FilteredModels1....fastq.gz]
+
+If you want to branch out and get EST data, you can look for JGI files labeled "refined transcripts" or "espressed sequence tags". Avoid files that say "allTranscripts".
+
+As you can see in my example, provide the paths to each evidence file after their proper flag, separated by a space.
 
 
 ```{bash, eval = FALSE}
@@ -270,6 +326,8 @@ funannotate predict \
   -o ./funannotate/
 ```
 
+<br>
+
 ### Explanation of Parameters
 
 - `-i "./prep/${ome}.masked.fasta"`  
@@ -297,6 +355,9 @@ funannotate predict \
   Output directory for annotation results. Funannotate will generate subdirectories with predicted gene models, annotation files (GFF3, GBK), protein and transcript FASTAs, and summary reports.
 
 ---
+
+<br>
+<br>
 
 ## Funannotate predict output explained
 
@@ -333,6 +394,9 @@ I created an automated genome annotation pipeline manager script, available on S
 This pipeline manager keeps track of all genomes in the pipeline, and works well to generate the annotations necessary for the genome assembly/annotation manager software [MycoTools](https://github.com/xonq/mycotools).
 
 ---
+
+<br>
+<br>
 
 ## Citations and versions for software/databases used
 

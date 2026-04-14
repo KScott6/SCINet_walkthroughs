@@ -13,6 +13,8 @@ ome="fusoxy1"
 threads=24
 busco_lineage="ascomycota_odb10"
 run_number="1"
+
+
 fun_dir="/project/arsef/projects/funannotate_test"
 project_dir="${fun_dir}/${ome}"
 
