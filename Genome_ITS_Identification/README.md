@@ -1,6 +1,6 @@
 # ITS identifcation
 
-Here is a quick way of checking the identity or screening for contamination in your genomes using BLAST. I focus on "ITS" here, but nothing is stopping you from using whatever region you want.
+Here is a quick way of checking the identity or screening for contamination in your genomes using BLAST. This example uses ITS/"Internal Transcribed Spacer", but you can use whatever other region you want (TEF1, COX1, etc).
 
 Your genomes of interest should all be in a single folder and named with a similar structure (same suffix, file extension).
 
@@ -9,6 +9,7 @@ The first script will create individual job scripts to BLAST a reference ITS seq
 ```bash
 python /project/arsef/scripts/genome_scripts/make_its_jobs.py \
   --ome-list /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/ome_list.txt \
+  --sample_column none \
   --asm-root /project/arsef/projects/ambrosiella/final_versions_ncbi/ncbi_assemblies \
   --asm-pattern "{ome}.fasta" \
   --its-out-root /project/arsef/projects/ambrosiella/final_versions_ncbi/its_ID/its_extraction \
@@ -20,7 +21,9 @@ python /project/arsef/scripts/genome_scripts/make_its_jobs.py \
   --genome-hit-count all --submit
 ```
 
-`--ome-list` single-column list of all your ome codes.
+`--ome-list` single-column list or metadata sheet containing a column of all your ome codes. 
+
+`--ome_column` specify the column name containing your ome codes. If no header, specify "--sample_column none"
 
 `--asm-root` path where all your genome assemblies are stored
 

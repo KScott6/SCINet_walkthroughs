@@ -26,6 +26,11 @@ barcode
 genome_size_Mbp
    * Used in assembly step
 
+ncbi_tax_ID 
+   * Used in NCBI FCS genome cleaning step
+   * get the TaxIDs from NCBI Taxonomy database
+   * Be as specific as you're able to be (to genus level preferred)
+
 The species column in the example sheet is not used by any of my scripts and only exists for your benefit. 
 
 
@@ -190,6 +195,10 @@ Explanation of key options:
 
 `--assembly_software`	flye or hifiasm
 
+`--flye_scaffold` Turn on scaffolding option (Flye only)
+
+`--assembly_suffix_append` [string]  Include a character string to add to your genome assemblies.
+
 `--input_dir`	Location of FASTQ reads
 
 `--input_suffix`	Recommended: .filt.fastq.gz (default highest priority)
@@ -213,6 +222,8 @@ Explanation of key options:
 <br>
 
 ### Option A : Flye (v2.9.2-b1786)
+
+Flye has the option to automatically scaffold your genome -- to turn on this option, include tthe paramter --flye_scaffold in your command. I also recommend you add a custom suffix to your genome, so that non-scaffolded flye genome assemblies do not get overwritten/confused (--assembly_suffix_append).
 
 ```bash
 python make_assembly_jobs.py \
@@ -246,6 +257,25 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_assembly_jobs.
   --mem_per_cpu 8000 \
   --account arsef \
   --conda_env /project/arsef/environments/pacbio \
+  --submit
+```
+
+Example with scaffolding option:
+
+```bash
+python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_assembly_jobs.py \
+  --metadata /project/arsef/projects/genome_assembly/April_PacBio/sample_data.txt \
+  --assembly_software flye \
+  --input_dir /project/arsef/projects/genome_assembly/April_PacBio/fastplong \
+  --input_suffix .filt.fastq.gz \
+  --script_dir /project/arsef/projects/genome_assembly/April_PacBio/commands/flye2 \
+  --log_dir /project/arsef/projects/genome_assembly/April_PacBio/logs/flye2 \
+  --assembly_dir /project/arsef/projects/genome_assembly/April_PacBio/flye2 \
+  --final_assembly_dir /project/arsef/projects/genome_assembly/April_PacBio/final_assemblies \
+  --threads 24 \
+  --mem_per_cpu 8000 \
+  --flye_scaffold \
+  --assembly_suffix_append _scaffold \
   --submit
 ```
 
@@ -426,3 +456,150 @@ Explanation of key options:
 `--overwrite`	Re-create script for sample, even if BUSCO summary already exists
 
 `--force_busco`	Add -f (force overwrite) to BUSCO command
+
+<br>
+<br>
+
+---
+
+
+## Screening and cleaning genomes for contaminants with NCBI FCS 
+
+After assembly and quality assessment, genomes can be screened for contamination using the NCBI Foreign Contamination Screen (FCS-GX). This software is automatically run on any genome you try to submit to NCBI, so doing this yourself will save a bit of time and effort.
+
+This workflow consists of **two steps**:
+
+1. **Screening** — identifies potentially contaminant contigs/regions  
+2. **Cleaning** — removes or splits flagged contaminant regions based on the screening report  
+
+FCS-GX is run in two phases because screening is computationally intensive (>=600GB) and benefits from batching multiple genomes per job, while cleaning is lightweight and best handled with one genome per job.
+
+<br>
+
+### Genome screening
+
+Script: make_fcs_screen_jobs.py
+
+This step depends on the proper NCBI taxID metadata provided in the sample metadata sheet. The more specific you can be with the TaxID, the better.
+
+```bash
+python make_fcs_screen_jobs.py \
+  --metadata sample_data.txt \
+  --sample-col sample_name \
+  --taxid-col ncbi_tax_ID \
+  --assembly-parent-dir final_assemblies \
+  --assembly-software hifiasm \
+  --gxdb /project/arsef/databases/gxdb \
+  --assemblies-per-job 8 \
+  --threads 32 \
+  --mem 600G \
+  --out-root fcs_gx/screen \
+  --cmd-root commands/fcs_screen \
+  --log-root logs/fcs_screen \
+  --submit
+```
+
+Example command:
+
+```bash
+python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_fcs_screen_jobs.py \
+  --metadata /project/arsef/projects/genome_assembly/April_PacBio/sample_data.txt \
+  --sample-col sample_name \
+  --taxid-col ncbi_tax_ID \
+  --assembly-parent-dir /project/arsef/projects/genome_assembly/April_PacBio/final_assemblies \
+  --gxdb /project/arsef/databases/gxdb \
+  --assemblies-per-job 8 \
+  --threads 32 \
+  --time 48:00:00 \
+  --mem 600G \
+  --out-root /project/arsef/projects/genome_assembly/April_PacBio/fcs_gx/screen \
+  --cmd-root /project/arsef/projects/genome_assembly/April_PacBio/commands/fcs_screen \
+  --log-root /project/arsef/projects/genome_assembly/April_PacBio/logs/fcs_screen \
+  --submit
+```
+
+Explanation of key options:
+
+`--assembly-parent-dir`	Folder containing assemblies to screen
+
+`--assembly-software`	Optional filter for flye or hifiasm assemblies (if you don't specify either, all will be run)
+
+`--gxdb`	Path to FCS GX database
+
+`--assemblies-per-job`	Number of genomes screened sequentially per job
+
+`--taxid-col`	Metadata column name containing NCBI taxids
+
+`--submit`	Submit generated jobs immediately
+
+<br>
+
+### Genome cleaning
+
+This step applies the FCS action report to produce cleaned assemblies.
+
+Two cleaning modes are supported: 
+
+`exclude`	Remove contaminant contigs/regions entirely
+
+`split`	Split flagged contigs instead of removing them
+
+(I recommend using `exclude`, espeically if you're trying to prepare for NCBI submission)
+
+```bash
+python make_fcs_clean_jobs.py \
+  --assembly-parent-dir final_assemblies \
+  --screen-out-root fcs_gx/screen \
+  --final-clean-dir final_assemblies/fcs_cleaned_exclude \
+  --metadata sample_data.txt \
+  --sample-col sample_name \
+  --assembly-software hifiasm \
+  --mode exclude \
+  --out-root fcs_gx/clean \
+  --cmd-root commands/fcs_clean \
+  --log-root logs/fcs_clean \
+  --submit
+```
+
+
+Example command:
+
+```bash
+python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_fcs_clean_jobs.py \
+  --assembly-parent-dir /project/arsef/projects/genome_assembly/April_PacBio/final_assemblies \
+  --screen-out-root /project/arsef/projects/genome_assembly/April_PacBio/fcs_gx/screen \
+  --final-clean-dir /project/arsef/projects/genome_assembly/April_PacBio/final_assemblies/fcs_cleaned_exclude \
+  --metadata /project/arsef/projects/genome_assembly/April_PacBio/sample_data.txt \
+  --sample-col sample_name \
+  --assembly-software hifiasm \
+  --mode exclude \
+  --out-root /project/arsef/projects/genome_assembly/April_PacBio/fcs_gx/clean \
+  --cmd-root /project/arsef/projects/genome_assembly/April_PacBio/commands/fcs_clean \
+  --log-root /project/arsef/projects/genome_assembly/April_PacBio/logs/fcs_clean \
+  --threads 1 \
+  --mem 8G \
+  --submit
+```
+
+Explanation of key options:
+
+`--screen-out-root`	Folder containing FCS screening outputs
+
+`--final-clean-dir`	Folder for final cleaned FASTA files
+
+`--mode`	exclude or split
+
+`--overwrite`	Re-run cleaning even if cleaned output exists
+
+
+Please consider:
+
+* FCS can occasionally over-call contamination in highly repetitive or unusual genomes
+  
+* Always review reports before accepting cleaned assemblies blindly
+  
+* Retain original uncleaned assemblies for comparison
+  
+* For publication-quality assemblies, manual inspection of flagged regions is recommended
+
+* This process is entirely dependent on the taxonomy data **you** provide
