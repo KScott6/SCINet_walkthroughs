@@ -20,4 +20,4 @@ module load miniconda/24.7.1-2
 source activate /project/arsef/environments/funannotate
 
 cd ${project_dir}
-funannotate sort -i "${project_dir}/data/${ome}_genomic.fasta" -o "${project_dir}/prep/${OMEcode}.clean.fasta" --minlen 1000
+funannotate sort -i "${project_dir}/data/${ome}_genomic.fasta" -o "${project_dir}/prep/${OMEcode}.sort.fasta" --minlen 1000
