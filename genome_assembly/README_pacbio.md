@@ -7,10 +7,14 @@ This pipeline takes raw HiFi reads from one or more samples and performs:
 
 1. BAM → FASTQ conversion
 2. Read QC/filtering (fastplong)
-3. Genome assembly (hifiasm / flye)
-4. (Optional downstream steps: QC, annotation)
+3. Genome assembly (hifiasm / flye / verkko)
+4. Quality Checks: QUAST, BUSCO, etc.
+5. Genome contamination assessment and filtering (NCBI FCS)
+   1. (Kelsey - maybe put a step in here for NCBI adaptor filtering?)
+6. Removal of mitochondrion DNA
 
-All steps are driven by a single metadata file (TSV/CSV). 
+
+This pipelie is dependant on a single metadata file (TSV/CSV) that you create. 
 
 <br>
 
@@ -24,12 +28,12 @@ barcode
    * Used to locate BAM files in bam2fastq step
 
 genome_size_Mbp
-   * Used in assembly step
+   * Used in the genome assembly step, for some assembly software
 
 ncbi_tax_ID 
    * Used in NCBI FCS genome cleaning step
-   * get the TaxIDs from NCBI Taxonomy database
-   * Be as specific as you're able to be (to genus level preferred)
+   * You can get these TaxIDs from NCBI Taxonomy database
+   * Be as specific as you can (to genus level preferred)
 
 The species column in the example sheet is not used by any of my scripts and only exists for your benefit. 
 
@@ -166,11 +170,25 @@ Explanation of key options:
 
 ---
 
-## Genome assembly
+## Step 3 : Genome assembly
 
-Two assembly software options are available in this pipeline:  Flye and hifiasm. Run both if you are unsure of which to use, then compare. I have found that some fungal taxa work better with one over the other. 
+### Options and explanations
 
-Both of these software require that you report an estimated genome size (in Mbp) in the metadata file. The provided size does not need to be perfect, just a ballpark.
+There are three assembly software options are available in this pipeline:  Flye, Hifiasm, and Verkko. Run all three if you are unsure of which to use, then compare the final assemblies. I have found that some fungal taxa work better with one over the other. 
+
+I've found that typically, for haploid fungal genomes, Flye produces assemblies with the "best" genome statistics (i.e. comparatively higher N50s, lower contig/scaffold counts, etc.). BUT, I've found that this is usually due to Flye collapsing the repetative seqeunces into smaller, higher-coverage contigs. If you have a fungal sample with high repeat content and produce genome assemblies with flye/hifiasm/verkko, you will notice large differences in genome size and GC% between the assemblies.
+
+So, if you want to study the **repeat content** of the genome - **use Hifiasm**.
+
+If you only care about getting the **"best" genome stats** - **use Flye**. 
+
+Verkko seems to be a middle ground between Flye and Hifiasm. 
+
+<br>
+
+### Required input files
+
+Both Flye and Hifiasm require that you report an estimated genome size (in Mbp) in the metadata file. The provided size does not need to be perfect, just a ballpark.
 
 Script: make_assembly_jobs.py
 
@@ -185,7 +203,7 @@ Outputs:
 
 This script can detect input reads in both a flat layout (input_dir/OME.filt.fastq.gz) or nested (input_dir/OME/OME.filt.fastq.gz).
 
-If you followed this pipeline exactly, you want to specify "--input_suffix .filt.fastq.gz" so the script knows to use the high-quality fitered reads (.filt.fastq.gz), and not the filtered out reads (.failed.fastq.gz). 
+
 
 <br>
 
@@ -193,7 +211,7 @@ Explanation of key options:
 
 `--metadata`	Metadata table (required)
 
-`--assembly_software`	flye or hifiasm
+`--assembly_software`	flye, hifiasm, or verkko
 
 `--flye_scaffold` Turn on scaffolding option (Flye only)
 
@@ -217,13 +235,15 @@ Explanation of key options:
 
 `--submit`	Submit jobs immediately
 
-`--overwrite	`Re-run even if output exists
+`--overwrite` Re-run even if output exists
 
 <br>
 
 ### Option A : Flye (v2.9.2-b1786)
 
-Flye has the option to automatically scaffold your genome -- to turn on this option, include tthe paramter --flye_scaffold in your command. I also recommend you add a custom suffix to your genome, so that non-scaffolded flye genome assemblies do not get overwritten/confused (--assembly_suffix_append).
+Flye has the option to automatically scaffold your genome -- to turn on this option, include the paramter --flye_scaffold in your command. I also recommend you add a custom suffix to your genome, so that non-scaffolded flye genome assemblies do not get overwritten/confused (--assembly_suffix_append).
+
+If you followed this pipeline exactly, you want to specify "--input_suffix .filt.fastq.gz" so the script knows to use the high-quality fitered reads (.filt.fastq.gz), and not the filtered out reads (.failed.fastq.gz). 
 
 ```bash
 python make_assembly_jobs.py \
@@ -320,9 +340,47 @@ python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_assembly_jobs.
 
 <br>
 
+### Option C : Verkko (v2.3.2)
+
+```bash
+python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_assembly_jobs.py \
+  --metadata sample_metadata.tsv \
+  --assembly_software verkko \
+  --input_dir fastplong \
+  --input_suffix .filt.fastq.gz \
+  --script_dir commands/verkko \
+  --log_dir logs/verkko \
+  --assembly_dir verkko \
+  --final_assembly_dir final_assemblies \
+  --threads 24 \
+  --submit
+```
+
+Example usage:
+
+```bash
+python /project/arsef/scripts/genome_assembly_scripts/pacbio/make_assembly_jobs.py \
+  --metadata /project/arsef/projects/genome_assembly/April_PacBio/sample_data.txt \
+  --assembly_software verkko \
+  --input_dir /project/arsef/projects/genome_assembly/April_PacBio/fastplong \
+  --script_dir /project/arsef/projects/genome_assembly/April_PacBio/commands/verkko \
+  --log_dir /project/arsef/projects/genome_assembly/April_PacBio/logs/verkko \
+  --assembly_dir /project/arsef/projects/genome_assembly/April_PacBio/verkko \
+  --final_assembly_dir /project/arsef/projects/genome_assembly/April_PacBio/final_assemblies \
+  --verkko_conda_env /project/arsef/environments/verkko \
+  --threads 24 \
+  --time 72:00:00 \
+  --mem_per_cpu 8000 \
+  --submit
+```
+
+<br>
+
 ---
 
-## Assessing basic genome stats with QUAST (v5.2.0)
+## Step 4 : Quality Checks 
+
+### Assessing basic genome stats with QUAST (v5.2.0)
 
 After assemblies are complete, QUAST can be run on all final genome assemblies together to generate comparative assembly statistics.
 
@@ -386,7 +444,7 @@ Explanation of key options:
 
 ---
 
-## Assessment of genome completeness with BUSCO (v5.8.3)
+### Assessment of genome completeness with BUSCO (v5.8.3)
 
 After assemblies are generated, BUSCO can be run on each genome to assess completeness using a lineage-specific BUSCO database.
 
@@ -462,8 +520,7 @@ Explanation of key options:
 
 ---
 
-
-## Screening and cleaning genomes for contaminants with NCBI FCS 
+## Step 5: Screening and cleaning genomes for contaminants with NCBI FCS 
 
 After assembly and quality assessment, genomes can be screened for contamination using the NCBI Foreign Contamination Screen (FCS-GX). This software is automatically run on any genome you try to submit to NCBI, so doing this yourself will save a bit of time and effort.
 
@@ -603,3 +660,17 @@ Please consider:
 * For publication-quality assemblies, manual inspection of flagged regions is recommended
 
 * This process is entirely dependent on the taxonomy data **you** provide
+
+<br>
+<br>
+
+---
+
+## Step 6 : Filtering out mitochondrion DNA
+
+If you try to submit your genomes to NCBI, they will be rejected if they have any mitochondiron DNA. Apparently, the NCBI FCS crew has plans to release a version that includes a mitocondrion DNA screening option, but there is no release date given for this. Last I checked, they were still working on it January 2024 with no stated to plans to release it anytime soon. In the meantime, I needed to find an automated way of finding and removing mito DNA from my genomes. 
+
+Some of my genomes had low-coverage contigs identified as mito DNA, so I prefer to stay away from coverage-based assessments. 
+
+I have made a custom database of mitochondrion DNA, to hopefully find and screen out any mito sequences before submitting to NCBI. 
+
