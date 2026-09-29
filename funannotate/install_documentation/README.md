@@ -117,9 +117,9 @@ I am storing all manually downloaded software in: /project/arsef/environments/fu
 
 ### GeneMark
 
-Note:  the GeneMark key will expire once every 400 days. You will need to get a new key from the [GeneMark website)[https://exon.gatech.edu/] once your old one expires (remove old .gm_key file, go to the website, fill out their form, download the key, upload the key to your home folder, and rename the new file to .gm_key). 
+Note:  the GeneMark key will expire once every 400 days. You will need to get a new key from the [GeneMark website](https://exon.gatech.edu/) once your old one expires (remove old .gm_key file, go to the website, fill out their form, download the key, upload the key to your home folder, and rename the new file to .gm_key). 
 
-**The .gm_key I provided will expire February 12, 2026.**
+**The .gm_key I provided will expire November 3rd, 2027.**
 
 
 I downloaded genemark GeneMark-ES/ET/EP+ ver 4.72_lic (LINUX 64 kernel 3.10 - 5) via their [website](https://genemark.bme.gatech.edu/license_download.cgi)

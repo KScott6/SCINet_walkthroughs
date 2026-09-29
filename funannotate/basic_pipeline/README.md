@@ -23,7 +23,9 @@ pkgs_dirs:
     - /project/arsef/environments/pkgs
 ```
 
-Obtain the GeneMark key. This key is only good for 400 days and will need to be replaced in the future. If you ever have sudden and/or unexplained GeneMark issues, check the validity of this key.
+Obtain the GeneMark key. **This key is only good for 400 days**. If you ever have sudden and/or unexplained GeneMark issues, it's most likely that the key expired and needs to be replaced.
+
+The current version of the key in /project/arsef/environments/funannotate/__external_software/ will expire on **November 3rd, 2027**.
 
 ```bash
 cp /project/arsef/environments/funannotate/__external_software/gm_key ~
@@ -270,7 +272,7 @@ NOTE: if you are getting strange errors, such as "No such file or directory:  [y
 
 ## Step 3 : Funannotate structural annotation 
 
-In this step, Funannotate integrates multiple sources of evidence to predict gene models on the masked genome assembly. This step produces the primary set of gene models that will be carried forward for downstream analyses, so it is typically the most computationally intensive and time-consuming part of the pipeline. You will need to submit this as a job - see my example [predict.sh](/commands/predict.sh) -- again, make sure to edit the ome name in the SLURM options.
+In this step, Funannotate integrates multiple sources of evidence to predict gene models on the masked genome assembly. This step produces the primary set of gene models that will be carried forward for downstream analyses, so it is typically the most computationally intensive and time-consuming part of the pipeline. You will need to submit this as a job - see my example [predict.sh](https://github.com/KScott6/SCINet_walkthroughs/blob/main/funannotate/basic_pipeline/commands/predict.sh) -- again, make sure to edit the ome name in the SLURM options.
 
 There are three things you need to specify for each funannotate run:
 
@@ -389,7 +391,7 @@ These files are the primary outputs you will use for downstream analyses (functi
 
 This pipeline is fine and easy if you are only annotating one or a handful of genomes. However, when you are trying to annotate many genomes all at once it becomes a hassle to generate, organize, and submit these different job scripts, and keep track of where each genome is in the pipeline. 
 
-I created an automated genome annotation pipeline manager script, available on SCINet: see [Funannotate pipeline manager](). **NOTE: I will upload these scripts soon**
+I created an automated genome annotation pipeline manager script, available on SCINet: see [Funannotate pipeline manager]().
 
 This pipeline manager keeps track of all genomes in the pipeline, and works well to generate the annotations necessary for the genome assembly/annotation manager software [MycoTools](https://github.com/xonq/mycotools).
 
