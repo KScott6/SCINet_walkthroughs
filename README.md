@@ -22,10 +22,10 @@
  
 ---
 
-`Other Funannotate walkthroughs` Fungal genome annotation (structural and functional).
+`Genome assembly` Creation of genome assemblies from different sequencing technologies. 
 
-- [Basic pipeline (Introduction to Funannotate)](funannotate/basic_pipeline)
-- [Install and maintenance documentation](/funannotate/install_documentation)
+- [GenomeFlow](https://github.com/KScott6/GenomeFlow). Automated pipeine (NextFlow) for Illumina-based genome assembly, and post-assembly quality checks.
+- [PacBio HiFi](genome_assembly/README_pacbio.md). Walkthrough of assembling a genome using PacBio HiFi data.
 
 ---
 
@@ -35,8 +35,8 @@
 
 ---
 
-`Genome assembly` Creation of genome assemblies from different sequencing technologies. 
+`Other Funannotate walkthroughs` Fungal genome annotation (structural and functional).
 
-- [PacBio HiFi](genome_assembly/README_pacbio.md)
-- Illumina (short-read) (will upload soon)
-- Nanopore aka ONT/MinION (long-read) (will upload soon)
+- [Basic pipeline (Introduction to Funannotate)](funannotate/basic_pipeline)
+- [Install and maintenance documentation](/funannotate/install_documentation)
+
